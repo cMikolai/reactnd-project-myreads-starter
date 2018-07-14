@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 //import escapeRegExp from 'escape-string-regexp'
-//import Book from './Book'
 import * as BooksAPI from './BooksAPI'
 
 class SearchBooks extends Component {
@@ -42,13 +41,10 @@ class SearchBooks extends Component {
     //const { books } = this.props
     const { query } = this.state
 
-    //let searchBooks
     if (query) {
       BooksAPI.search(query, 20).then((books) => {
        books.length > 0 ?  this.setState({ searchBooks: books }) : this.setState({ searchBooks: [] })
      })
-    } else {
-      // this.setState({ searchBooks: books})
     }
 
     return (
@@ -95,7 +91,8 @@ class SearchBooks extends Component {
                     <div className="book-shelf-changer">
                       <select
                         value={book.shelf}
-                        onChange={this.changeShelf}
+                        //onChange={this.changeShelf}
+                        onChange={(event) => this.changeShelf(event.target.value)}
                         >
                         <option value="move" disabled>
                           Move to...
