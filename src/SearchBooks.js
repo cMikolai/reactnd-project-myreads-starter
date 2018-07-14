@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import escapeRegExp from 'escape-string-regexp'
+//import escapeRegExp from 'escape-string-regexp'
+//import Book from './Book'
 import * as BooksAPI from './BooksAPI'
 
 class SearchBooks extends Component {
   static propTypes = {
-    books: PropTypes.array.isRequired
+    books: PropTypes.array.isRequired,
   }
 
   state = {
     query: '',
     searchBooks: [],
+    shelf: [],
     books: []
   }
 
@@ -23,17 +25,30 @@ class SearchBooks extends Component {
     this.setState({ query: '' })
   }
 
+  changeShelf = (bookId, e) => {
+
+    let searchResults = this.props.bookShelf;
+    const book = searchResults.filter(t => t.id === bookId)[0];
+    book.shelf = e.target.value;
+
+    BooksAPI.update (book, e.target.value).then(response => {
+      this.setState ({
+        books: searchResults
+      });
+    });
+  };
+
   render() {
-    const { books } = this.props
+    //const { books } = this.props
     const { query } = this.state
 
-    let searchBooks
+    //let searchBooks
     if (query) {
       BooksAPI.search(query, 20).then((books) => {
        books.length > 0 ?  this.setState({ searchBooks: books }) : this.setState({ searchBooks: [] })
      })
     } else {
-      //this.setState({ searchBooks: books})
+      // this.setState({ searchBooks: books})
     }
 
     return (
@@ -61,42 +76,44 @@ class SearchBooks extends Component {
 
           </div>
         </div>
+
         <div className="search-books-results">
           <ol className="books-grid">
-            {this.state.searchBooks.map((book) =>
-             <li key={book.id} className="book">
-               <div className="book-top">
-                 <div
-                   className="book-cover"
-                   style={{
-                     width: 128,
-                     height: 193,
-                     backgroundImage: `url(${book.imageLinks.thumbnail})`
-                   }}
-                 />
-                 <div className="book-shelf-changer">
-                   <select
-                     value={book.shelf}
-                     onChange={e => {
-                       this.changeShelf(book, e.target.value);
-                     }}
-                   >
-                     <option value="none" disabled>
-                       Move to...
-                     </option>
-                     <option value="currentlyReading">Currently Reading</option>
-                     <option value="wantToRead">Want to Read</option>
-                     <option value="read">Read</option>
-                     <option value="none">None</option>
-                   </select>
-                 </div>
-               </div>
-               <div className='book-details'>
-                 <div className='book-title'><p>{book.title}</p></div>
-                 <div className='book-authors'><p>{book.authors}</p></div>
-               </div>
-             </li>
-           )}
+
+            {this.state.searchBooks.map(book =>
+              <li key={book.id} className="book">
+                <div className="book-top">
+                  <div
+                    className="book-cover"
+                    style={{
+                      width: 128,
+                      height: 193,
+                      //backgroundImage: `url(${book.imageLinks.thumbnail})`
+                    }}
+                  />
+
+                    <div className="book-shelf-changer">
+                      <select
+                        value={book.shelf}
+                        onChange={this.changeShelf}
+                        >
+                        <option value="move" disabled>
+                          Move to...
+                        </option>
+                        <option value="currentlyReading">Currently Reading</option>
+                        <option value="wantToRead">Want to Read</option>
+                        <option value="read">Read</option>
+                        <option value="none">None</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className='book-details'>
+                    <div className='book-title'><p>{book.title}</p></div>
+                    <div className='book-authors'><p>{book.authors}</p></div>
+                  </div>
+              </li>
+            )}
+
           </ol>
         </div>
       </div>
@@ -105,7 +122,8 @@ class SearchBooks extends Component {
 }
 
 SearchBooks.PropTypes = {
-  books: PropTypes.array.isRequired
+  books: PropTypes.array.isRequired,
+  changeShelf: PropTypes.func.isRequired
 }
 
 export default SearchBooks

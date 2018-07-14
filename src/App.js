@@ -17,7 +17,7 @@ class BooksApp extends React.Component {
     });
   }
 
-  changeShelf = (book: any, shelf: string) => {
+  changeShelf = (book, shelf ) => {
     BooksAPI.update(book, shelf).then(response => {
       this.getBooksOnShelf();
     });
@@ -50,6 +50,8 @@ class BooksApp extends React.Component {
           )}/>
           <Route path='/search' render={({ history }) => (
             <SearchBooks
+              books={this.state.books}
+              bookShelf={this.state.books}
               onSearchBooks={(book) => {
                 this.searchBooks(book)
                 history.push('/')
