@@ -4,27 +4,29 @@ import PropTypes from 'prop-types'
 
 class SearchBook extends Component {
 
+  static PropTypes = {
+    books: PropTypes.array.isRequired,
+    moveShelf: PropTypes.func.isRequired
+  }
 
   render() {
+     const {book, moveShelf} = this.props
+
     return (
+
       <div>
-        {this.props.books.map((book) => (
-              <li key={book.id} className="book" shelf="None">
+              <li key={this.props.id} className="book" shelf="None">
                 <div className="book-top">
                   <div
                     className="book-cover"
-                    style={{
-                      width: 128,
-                      height: 193,
-                      //backgroundImage: `url(${book.imageLinks.thumbnail})`
-                    }}
+                    style={ book && book.imageLinks && book.imageLinks.thumbnail && { backgroundImage: `url(${book.imageLinks.thumbnail})`,
+                    width: 128, height: 193, }}
                   />
 
                     <div className="book-shelf-changer">
                       <select
-                        value={book.shelf}
-                        onChange={this.changeShelf}
-                        //onChange={e => this.props.onChangeShelf(book.id, e)}
+                        value={this.props.shelf}
+                        onChange={(event) => moveShelf(event, book)}
                         >
                         <option value="move" disabled>
                           Move to...
@@ -37,11 +39,10 @@ class SearchBook extends Component {
                     </div>
                   </div>
                   <div className='book-details'>
-                    <div className='book-title'><p>{book.title}</p></div>
-                    <div className='book-authors'><p>{book.authors}</p></div>
+                    <div className='book-title'><p>{this.props.title}</p></div>
+                    <div className='book-authors'><p>{this.props.authors}</p></div>
                   </div>
               </li>
-            ))}
           </div>
     )
   }

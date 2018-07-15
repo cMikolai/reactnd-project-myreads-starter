@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import Book from './Book'
 import PropTypes from 'prop-types'
-import * as BooksAPI from './BooksAPI'
+//import * as BooksAPI from './BooksAPI'
 
 class ListBooks extends Component {
   static propTypes = {
@@ -11,7 +11,7 @@ class ListBooks extends Component {
   }
 
   render() {
-    const { books, moveShelf } = this.props
+    const { moveShelf } = this.props
 
     return (
       <div className="list-books">

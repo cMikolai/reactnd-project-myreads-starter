@@ -9,7 +9,7 @@ class Book extends Component {
   }
 
   render() {
-    const {book, moveShelf} = this.props
+    const {moveShelf} = this.props
 
     //let imageLinks = BooksAPI.search('B').then(r => r.forEach(book => book.imageLinks /*&& console.log(book.imageLinks.thumbnail) */))
 

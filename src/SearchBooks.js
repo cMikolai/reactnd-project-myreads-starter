@@ -1,51 +1,58 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
-//import escapeRegExp from 'escape-string-regexp'
+import SearchBook from './searchBook'
+import escapeRegExp from 'escape-string-regexp'
 import * as BooksAPI from './BooksAPI'
 
 class SearchBooks extends Component {
   static propTypes = {
     books: PropTypes.array.isRequired,
+    moveShelf: PropTypes.func.isRequired
   }
 
   state = {
     query: '',
-    searchBooks: [],
-    shelf: [],
     books: []
   }
 
   updateQuery = (query) => {
-    this.setState({ query: query.trim() })
-  }
+        this.setState({ query: query.trim() })
+    }
 
-  clearQuery = () => {
-    this.setState({ query: '' })
-  }
+    clearQuery = () => {
+        this.setState({ query: '', books: []})
+    }
 
-  changeShelf = (bookId, e) => {
+  searchBooks = (query) => {
+        if(!query) {
+            this.clearQuery(query)
+        } else {
+            this.updateQuery(query)
 
-    let searchResults = this.props.bookShelf;
-    const book = searchResults.filter(t => t.id === bookId)[0];
-    book.shelf = e.target.value;
-
-    BooksAPI.update (book, e.target.value).then(response => {
-      this.setState ({
-        books: searchResults
-      });
-    });
-  };
+            BooksAPI.search(query, 20).then(books => {
+                if(!books.error) {
+                    books.map(book => (this.props.books.filter((b) => b.id === book.id).map(b => book.shelf = b.shelf)))
+                    this.setState({ books })
+                } else {
+                    console.log(books.error)
+                }
+            })
+        }
+    }
 
   render() {
-    //const { books } = this.props
-    const { query } = this.state
+    const { moveShelf } = this.props
+    const { query, books } = this.state
+
+    let searchBooks
 
     if (query) {
-      BooksAPI.search(query, 20).then((books) => {
-       books.length > 0 ?  this.setState({ searchBooks: books }) : this.setState({ searchBooks: [] })
-     })
-    }
+            const match = new RegExp(escapeRegExp(query), 'i')
+            searchBooks = books.filter(book => match.test(book.title))
+        } else {
+            searchBooks = books
+        }
 
     return (
       <div className="search-books">
@@ -64,8 +71,8 @@ class SearchBooks extends Component {
               you don't find a specific author or title. Every search is limited by search terms.
             */}
             <input
-              value={this.state.query}
-              onChange={(event) => this.updateQuery(event.target.value)}
+              value={query}
+              onChange={(event) => this.searchBooks(event.target.value)}
               type="text"
               placeholder="Search by title or author"
             />
@@ -74,45 +81,22 @@ class SearchBooks extends Component {
         </div>
 
         <div className="search-books-results">
-          <ol className="books-grid">
 
-            {this.state.searchBooks.map(book =>
-              <li key={book.id} className="book">
-                <div className="book-top">
-                  <div
-                    className="book-cover"
-                    style={{
-                      width: 128,
-                      height: 193,
-                      //backgroundImage: `url(${book.imageLinks.thumbnail})`
-                    }}
-                  />
-
-                    <div className="book-shelf-changer">
-                      <select
-                        value={book.shelf}
-                        //onChange={this.changeShelf}
-                        onChange={(event) => this.changeShelf(event.target.value)}
-                        >
-                        <option value="move" disabled>
-                          Move to...
-                        </option>
-                        <option value="currentlyReading">Currently Reading</option>
-                        <option value="wantToRead">Want to Read</option>
-                        <option value="read">Read</option>
-                        <option value="none">None</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className='book-details'>
-                    <div className='book-title'><p>{book.title}</p></div>
-                    <div className='book-authors'><p>{book.authors}</p></div>
-                  </div>
-              </li>
-            )}
-
-          </ol>
-        </div>
+                    <ol className="books-grid">
+                        { searchBooks.map((book) => {
+                            return (
+                              <SearchBook
+                                key={book.id}
+                                book={book}
+                                moveShelf={moveShelf}
+                                title={book.title}
+                                shelf={book.shelf}
+                                authors={book.authors}/>
+                            )
+                        })
+                        }
+                    </ol>
+                </div>
       </div>
       )
   }
@@ -120,7 +104,7 @@ class SearchBooks extends Component {
 
 SearchBooks.PropTypes = {
   books: PropTypes.array.isRequired,
-  changeShelf: PropTypes.func.isRequired
+  moveShelf: PropTypes.func.isRequired
 }
 
 export default SearchBooks
