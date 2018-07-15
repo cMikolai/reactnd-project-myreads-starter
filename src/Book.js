@@ -31,7 +31,9 @@ class Book extends Component {
                       backgroundImage: `url(${book.imageLinks.thumbnail})`
                     }}/>
                     <div className="book-shelf-changer">
-                      <select value={book.shelf} onChange={(event) => moveShelf(event, book)}>
+                      <select value={book.shelf}
+                        defaultValue="none" 
+                        onChange={(event) => moveShelf(event, book)}>
                         <option value="move" disabled>Move to...</option>
                         <option value="currentlyReading">Currently Reading</option>
                         <option value="wantToRead">Want to Read</option>
