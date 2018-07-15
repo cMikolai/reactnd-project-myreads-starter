@@ -4,8 +4,7 @@ import PropTypes from 'prop-types'
 
 class SearchBook extends Component {
 
-  static PropTypes = {
-    books: PropTypes.array.isRequired,
+  static propTypes = {
     moveShelf: PropTypes.func.isRequired
   }
 
