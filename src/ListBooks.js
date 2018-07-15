@@ -1,23 +1,18 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import Book from './Book'
-//import PropTypes from 'prop-types'
+import PropTypes from 'prop-types'
 import * as BooksAPI from './BooksAPI'
 
 class ListBooks extends Component {
-
-  changeShelf = (bookId, e) => {
-    let currentShelf = this.props.bookShelf;
-    const book = currentShelf.filter(t => t.id === bookId)[0];
-    book.shelf = e.target.value;
-    BooksAPI.update (book, e.target.value).then(response => {
-      this.setState ({
-        books: currentShelf
-      });
-    });
-  };
+  static propTypes = {
+    books: PropTypes.array.isRequired,
+    moveShelf: PropTypes.func.isRequired
+  }
 
   render() {
+    const { books, moveShelf } = this.props
+
     return (
       <div className="list-books">
         <div className="list-books-title">
@@ -28,19 +23,19 @@ class ListBooks extends Component {
             <Book
             key="currently"
             books={this.props.bookShelf.filter(book => book.shelf === "currentlyReading")}
-            onChangeShelf={this.changeShelf}
+            moveShelf={moveShelf}
             shelf="Currently Reading"
             />
             <Book
               key="wantToRead"
               books={this.props.bookShelf.filter(book => book.shelf === "wantToRead")}
-              onChangeShelf={this.changeShelf}
+              moveShelf={moveShelf}
               shelf="Want to Read"
             />
             <Book
               key="read"
               books={this.props.bookShelf.filter(book => book.shelf === "read")}
-              onChangeShelf={this.changeShelf}
+              moveShelf={moveShelf}
               shelf="Read"
             />
           </div>
@@ -48,7 +43,7 @@ class ListBooks extends Component {
         <div className="open-search">
           <Link
             to='/search'
-            onClick={() => this.setState({ showSearchPage: true })}>
+            onClick={this.props.onNavigate}>
             Add a book</Link>
         </div>
       </div>

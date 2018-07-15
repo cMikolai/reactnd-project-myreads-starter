@@ -1,3 +1,7 @@
+.book-shelf {
+  color: red;
+}
+
 :root {
   --main-color: #8e0038;
   --second-color: #c51162;

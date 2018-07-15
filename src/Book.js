@@ -4,11 +4,12 @@ import PropTypes from 'prop-types'
 
 class Book extends Component {
   static PropTypes = {
-    books: PropTypes.array.isRequired
+    books: PropTypes.array.isRequired,
+    moveShelf: PropTypes.func.isRequired
   }
 
   render() {
-    //const { books } = this.props
+    const {book, moveShelf} = this.props
 
     //let imageLinks = BooksAPI.search('B').then(r => r.forEach(book => book.imageLinks /*&& console.log(book.imageLinks.thumbnail) */))
 
@@ -30,7 +31,7 @@ class Book extends Component {
                       backgroundImage: `url(${book.imageLinks.thumbnail})`
                     }}/>
                     <div className="book-shelf-changer">
-                      <select value={book.shelf} onChange={e => this.props.onChangeShelf(book.id, e)}>
+                      <select value={book.shelf} onChange={(event) => moveShelf(event, book)}>
                         <option value="move" disabled>Move to...</option>
                         <option value="currentlyReading">Currently Reading</option>
                         <option value="wantToRead">Want to Read</option>

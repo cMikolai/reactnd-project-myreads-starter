@@ -10,20 +10,16 @@ class BooksApp extends React.Component {
     books: []
   }
   componentDidMount() {
-    BooksAPI.getAll().then(data => {
-      this.setState({
-        books: data
-      });
-    });
+    this.getBooksOnShelf()
   }
 
-  changeShelf = (book, shelf ) => {
+/*  changeShelf = (book, shelf ) => {
     BooksAPI.update(book, shelf).then(response => {
       this.getBooksOnShelf();
     });
-  };
+  }; */
 
-  getBooksOnShelf() {
+  getBooksOnShelf = () => {
     BooksAPI.getAll().then(data => {
       this.setState({
         books: data
@@ -31,12 +27,17 @@ class BooksApp extends React.Component {
     });
   }
 
-  searchBooks(book) {
-    BooksAPI.search(book).then(book => {
-      this.setState(state => ({
-        books: state.books.concat([ book ])
-      }))
-    })
+  moveShelf  = (event, book) => {
+      const shelf = event.target.value
+
+      if (this.state.books) {
+        BooksAPI.update(book,shelf).then(() => {
+          book.shelf = shelf;
+          this.setState(state => ({
+            books: state.books.filter(b => b.id !== book.id).concat([ book ])
+          }))
+        })
+      }
   }
 
   render() {
@@ -46,14 +47,16 @@ class BooksApp extends React.Component {
           <ListBooks
             books={this.state.books}
             bookShelf={this.state.books}
+            moveShelf={this.moveShelf}
           />
           )}/>
           <Route path='/search' render={({ history }) => (
             <SearchBooks
               books={this.state.books}
               bookShelf={this.state.books}
+              moveShelf={this.moveShelf}
               onSearchBooks={(book) => {
-                this.searchBooks(book)
+                this.addBook(book)
                 history.push('/')
               }}
             />
